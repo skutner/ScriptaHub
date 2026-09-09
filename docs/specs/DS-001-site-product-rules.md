@@ -151,3 +151,11 @@ run `git diff --check`, and verify these invariants:
 - Public copy does not describe the site or workflows as static, prebuilt, generated, temporary because of architecture, or backend-free.
 
 A deliberate change to one of these decisions updates this specification, its implementation, generator checks where practical, and any affected public privacy or legal statement in the same change.
+
+## 15. Fork preview deployment
+
+The `skutner/ScriptaHub` fork publishes `user-persisto-v2` at
+`https://skutner.github.io/ScriptaHub/`. Its `scriptahub-preview` public client
+uses a loopback UserPersisto issuer for testing on the Explorer host. This fork
+has no production custom domain. Preview configuration and setup are recorded
+in `PREVIEW.md`; account data stays in the selected local Explorer deployment.

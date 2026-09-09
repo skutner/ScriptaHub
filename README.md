@@ -1,5 +1,10 @@
 # ScriptaHub
 
+This fork publishes the `user-persisto-v2` preview at
+<https://skutner.github.io/ScriptaHub/>. Its account service runs on the visitor's
+own computer. See [PREVIEW.md](PREVIEW.md) for local Explorer setup and testing.
+The production site remains in `Axiologic/ScriptaHub`.
+
 Public repository for scriptahub.com. GitHub Pages serves the prebuilt site from
 `docs/`. Reader account configuration is in [docs/auth/README.md](docs/auth/README.md).
 Product rules are in [DS-001](docs/specs/DS-001-site-product-rules.md); tooling

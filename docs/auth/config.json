@@ -1,4 +1,4 @@
 {
-  "issuer": "",
-  "clientId": "scriptahub-web"
+    "issuer": "http://127.0.0.1:8080/base-agent-additional-server/userPersistoAgent/7000/service/oidc",
+    "clientId": "scriptahub-preview"
 }
