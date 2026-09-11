@@ -22,3 +22,31 @@
 a[data-auth-action][aria-busy="true"] { cursor: progress; }
 .scriptahub-auth-callback { background: #f8f5ed; color: #172b27; font: 1rem/1.6 system-ui, sans-serif; margin: 0; }
 .scriptahub-auth-callback main { margin: 10vh auto; max-width: 28rem; padding: 2rem; }
+.scriptahub-auth-pending {
+    position: fixed;
+    inset: auto 1rem 1rem auto;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: calc(100vw - 2rem);
+    box-sizing: border-box;
+    padding: .8rem 1rem;
+    border: 1px solid var(--line, #d5ddd7);
+    border-radius: 8px;
+    color: var(--ink, #172b27);
+    background: var(--field, #fffdf8);
+    box-shadow: 0 4px 24px #0003;
+    font: 1rem/1.4 system-ui, sans-serif;
+}
+.scriptahub-auth-pending p { margin: 0; }
+.scriptahub-auth-pending button {
+    color: inherit;
+    background: transparent;
+    border: 1px solid var(--line, #c7d4cb);
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    padding: .5rem .8rem;
+}
+.scriptahub-auth-pending button:focus-visible { outline: 3px solid #6fa8d0; outline-offset: 3px; }

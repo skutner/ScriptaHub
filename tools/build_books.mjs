@@ -139,7 +139,7 @@ export function bookPage(book, language, pagePath, hasContent, { docsRoot = DOCS
   <meta property="og:description" content="${escape(description)}">
   <meta property="og:image" content="cover.webp">
   <link rel="stylesheet" href="${escape(css)}">
-  <script defer src="${escape(authScript)}?v=20260908-1"></script>
+  <script defer src="${escape(authScript)}?v=20260911-2"></script>
 </head>
 <body data-book-page="true" data-book-language="${language}">
   <main class="site-shell book-page">

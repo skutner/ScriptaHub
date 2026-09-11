@@ -208,3 +208,41 @@ from another working directory without an npm or Python environment.
 Real model inference and ImageMagick conversion require the optional environment
 above; they were not available on the migration host. Mocked orchestration and
 failure checks do not establish real model output or codec operation.
+
+## Optional real-browser authentication verification
+
+The new popup/lifecycle code uses native BroadcastChannel, AbortController and
+monotonic browser time; it adds no production or build dependency. Existing
+openid-client remains responsible for PKCE/OIDC/JOSE rather than a handwritten
+security protocol. The controlled HTTP fixture and deterministic race tests use
+Node.js built-ins only, including RSA signing with `node:crypto`.
+
+The browser scenario files under `tests/browser/` are Playwright CLI functions,
+run explicitly with `run-code --filename`; they are not application scripts or
+part of `npm test`. Verification used the existing **@playwright/cli 0.1.19**,
+with its exact runtime dependencies **playwright 1.63.0-alpha-2026-08-31** and
+**playwright-core 1.63.0-alpha-2026-08-31**, and Chrome **152.0.7977.83** in a
+separate local session. The CLI accepts Node >=18, its Playwright runtime >=20;
+this project still requires Node >=22.12. These packages use **Apache-2.0**;
+`LICENSE` and `NOTICE` remain in their installed package directories. The installed
+Playwright package depends only on the same exact playwright-core release. Browser binaries
+retain their vendor/component notices and are not redistributed by this repo.
+
+Real popup windows, COOP separation, BroadcastChannel delivery and trusted anchor
+activation cannot be established by Node or synthetic DOM tests, which justifies
+this optional verification dependency under the requested real-browser matrix.
+No global installation is required. An operator can use an existing installation
+or explicitly run `npx --package @playwright/cli@0.1.19 playwright-cli --version`,
+then follow `docs/auth/README.md`. Confirm that version and a selected installed
+browser before opening the fixture. Missing CLI/browser errors must be resolved
+by the operator; application startup and `npm test` never install either. The
+CLI's own missing-browser message gives the supported install command.
+
+Upstream sources and updates are
+[Playwright CLI](https://github.com/microsoft/playwright-cli) and
+[Playwright](https://github.com/microsoft/playwright). No local patches or bundled
+third-party copies were added. Updating requires selecting explicit CLI/runtime
+versions, retaining installed notices, and rerunning both browser scenario files
+with recorded browser versions. Replacing the CLI with another real-browser
+harness could remove this optional dependency; replacing it with synthetic DOM
+checks would not meet the popup acceptance requirement.

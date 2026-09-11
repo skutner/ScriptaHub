@@ -109,6 +109,17 @@
     return `<aside class="workflow-context workflow-book-compact"><a href="${escape(href)}" aria-label="${escape(`${words.back}: ${title}`)}"><img src="../${escape(book.thumbnailUrl[lang] || book.thumbnailUrl.en)}" alt="${escape(title)}"></a><div><h2>${escape(title)}</h2><p>${escape(description)}</p></div></aside>`;
   };
   const mail = (subject, lines) => `mailto:create@scriptahub.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
+    const grantApiVersion = 1;
+    const accountReload = {
+        en: "Reload this page to update sign-in, then try again. Copy any unsent text before reloading.",
+        fr: "Rechargez cette page pour mettre à jour la connexion, puis réessayez. Copiez tout texte non envoyé avant de recharger.",
+        de: "Laden Sie diese Seite neu, um die Anmeldung zu aktualisieren, und versuchen Sie es erneut. Kopieren Sie vorher ungesendeten Text.",
+        es: "Recarga esta página para actualizar el inicio de sesión y vuelve a intentarlo. Copia el texto no enviado antes de recargar.",
+        pt: "Recarregue esta página para atualizar o início de sessão e tente novamente. Copie o texto não enviado antes de recarregar.",
+        it: "Ricarica questa pagina per aggiornare l’accesso, poi riprova. Copia il testo non inviato prima di ricaricare.",
+        ro: "Reîncarcă această pagină pentru a actualiza autentificarea, apoi încearcă din nou. Copiază textul netrimis înainte de reîncărcare.",
+        pl: "Odśwież tę stronę, aby zaktualizować logowanie, i spróbuj ponownie. Przed odświeżeniem skopiuj niewysłany tekst.",
+    };
   const accountUnavailable = {
     en: "Account sign-in is currently unavailable. Please try again.",
     fr: "La connexion à votre compte est momentanément indisponible. Veuillez réessayer.",
@@ -174,44 +185,52 @@
     });
   }
 
-  function renderFeedback(lang) {
-    const words = text[lang];
-    const book = activeBook();
-    document.title = `${words.feedbackTitle} · ScriptaHub`;
-    const side = `<div class="workflow-aside-stack">${compactBookContext(book, lang, words)}${agreementCard(words)}</div>`;
-    root.innerHTML = `${pageHero(words.feedbackKicker, words.feedbackTitle)}<section class="workflow-layout"><form class="workflow-form" data-workflow-form><p class="workflow-message">${escape(words.promise)}</p><div class="form-grid">${field(words.name, "name", "text", false, "", true)}${field(words.email, "email", "email")}${field(words.url, "url", "url", true, "https://")}
-      <label class="form-field form-field-wide"><span>${escape(words.kind)}</span><select name="kind">${words.kinds.map((kind) => `<option>${escape(kind)}</option>`).join("")}</select></label>${textarea(words.feedback, "feedback", words.feedbackHint, true)}${textarea(words.sources, "sources", words.sourcesHint)}</div><button class="workflow-submit" type="submit" disabled>${escape(words.send)}</button><p class="workflow-note">${escape(words.mailNote)}</p><p class="workflow-status" data-workflow-status aria-live="polite"></p></form>${side}</section>`;
-    const form = root.querySelector("form");
-    const contract = root.querySelector("[data-contract-accept]");
-    const submit = form.querySelector("[type=submit]");
-    let awaitingAccount = false;
-    contract.addEventListener("change", () => { submit.disabled = awaitingAccount || !book || !contract.checked; });
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (awaitingAccount || !book || !contract.checked || !form.reportValidity()) return;
-      const status = form.querySelector("[data-workflow-status]");
-      awaitingAccount = true;
-      submit.disabled = true;
-      status.textContent = "";
-      try {
-        if (!globalThis.ScriptaHubAuth?.requireAccount) throw new Error("Account service unavailable");
-        const account = await globalThis.ScriptaHubAuth.requireAccount("feedback");
-        if (!account || !form.isConnected || !contract.checked || !form.reportValidity()) return;
-        const data = new FormData(form);
-        const lines = [
-          `Book ID: ${book.id}`, `Book: ${book.title[lang] || book.title.en}`, `Book directory: ${book.directory}`, `Edition language: ${lang}`, `Contribution type: ${data.get("kind") || ""}`,
-          `Name: ${data.get("name") || ""}`, `Reply email: ${data.get("email") || ""}`, `Promotional URL: ${data.get("url") || ""}`, `Contribution agreement accepted: yes`, "", "PROPOSED CHANGE / FEEDBACK", data.get("feedback") || "", "", "SOURCES / CONTEXT", data.get("sources") || "",
-        ];
-        status.textContent = words.mailReady;
-        location.href = mail(`${words.feedbackSubject}: ${book.title[lang] || book.title.en}`, lines);
-      } catch {
-        status.textContent = accountUnavailable[lang];
-      } finally {
-        awaitingAccount = false;
-        submit.disabled = !book || !contract.checked;
-      }
-    });
-  }
+    function renderFeedback(lang) {
+        const words = text[lang];
+        const book = activeBook();
+        document.title = `${words.feedbackTitle} · ScriptaHub`;
+        const side = `<div class="workflow-aside-stack">${compactBookContext(book, lang, words)}${agreementCard(words)}</div>`;
+        root.innerHTML = `${pageHero(words.feedbackKicker, words.feedbackTitle)}<section class="workflow-layout"><form class="workflow-form" data-workflow-form><p class="workflow-message">${escape(words.promise)}</p><div class="form-grid">${field(words.name, "name", "text", false, "", true)}${field(words.email, "email", "email")}${field(words.url, "url", "url", true, "https://")}
+            <label class="form-field form-field-wide"><span>${escape(words.kind)}</span><select name="kind">${words.kinds.map((kind) => `<option>${escape(kind)}</option>`).join("")}</select></label>${textarea(words.feedback, "feedback", words.feedbackHint, true)}${textarea(words.sources, "sources", words.sourcesHint)}</div><button class="workflow-submit" type="submit" disabled>${escape(words.send)}</button><p class="workflow-note">${escape(words.mailNote)}</p><p class="workflow-status" data-workflow-status aria-live="polite"></p></form>${side}</section>`;
+        const form = root.querySelector("form");
+        const contract = root.querySelector("[data-contract-accept]");
+        const submit = form.querySelector("[type=submit]");
+        let awaitingAccount = false;
+        contract.addEventListener("change", () => { submit.disabled = awaitingAccount || !book || !contract.checked; });
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            if (awaitingAccount || !book || !contract.checked || !form.reportValidity()) return;
+            const status = form.querySelector("[data-workflow-status]");
+            awaitingAccount = true;
+            submit.disabled = true;
+            status.textContent = "";
+            try {
+                const gate = globalThis.ScriptaHubAuth;
+                if (gate?.grantApiVersion !== grantApiVersion || typeof gate.requireAccount !== "function") {
+                    status.textContent = accountReload[lang];
+                    return;
+                }
+                const grant = await gate.requireAccount("feedback", form, grantApiVersion);
+                if (!grant) return;
+                if (!form.isConnected || !contract.checked || !form.reportValidity()) { grant.cancel(); return; }
+                grant.publish(() => {
+                    if (!form.isConnected || !contract.checked || !form.reportValidity()) throw new Error("Feedback changed");
+                    const data = new FormData(form);
+                    const lines = [
+                        `Book ID: ${book.id}`, `Book: ${book.title[lang] || book.title.en}`, `Book directory: ${book.directory}`, `Edition language: ${lang}`, `Contribution type: ${data.get("kind") || ""}`,
+                        `Name: ${data.get("name") || ""}`, `Reply email: ${data.get("email") || ""}`, `Promotional URL: ${data.get("url") || ""}`, `Contribution agreement accepted: yes`, "", "PROPOSED CHANGE / FEEDBACK", data.get("feedback") || "", "", "SOURCES / CONTEXT", data.get("sources") || "",
+                    ];
+                    status.textContent = words.mailReady;
+                    location.href = mail(`${words.feedbackSubject}: ${book.title[lang] || book.title.en}`, lines);
+                });
+            } catch {
+                status.textContent = accountUnavailable[lang];
+            } finally {
+                awaitingAccount = false;
+                submit.disabled = !book || !contract.checked;
+            }
+        });
+    }
 
   async function renderEditions(lang) {
     const words = text[lang];
