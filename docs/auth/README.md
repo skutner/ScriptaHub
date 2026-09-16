@@ -27,12 +27,13 @@ management API:
 }
 ```
 
-Initialize the service owner using the existing UserPersisto setup flow before
-enabling public registration. Enable password login and self-registration, with
-`selfRegistered` as the registration role. The provider's `user-persisto-v2`
-changes support `screen_hint=signup` and prevent the OIDC signup endpoint from
-creating the initial administrator. Existing `user` and `admin` accounts also
-qualify for the site's gated actions.
+Initialize the service owner using UserPersisto's verified-email or Google setup
+flow before connecting a public application. The first completed sign-in claims
+the administrator; after setup, enabled self-registration assigns exactly
+`selfRegistered`. UserPersisto is passwordless. ScriptaHub requests
+`screen_hint=signup`, but that hint does not override installation setup or
+registration policy. Existing `user` and `admin` accounts also qualify for the
+site's gated actions.
 
 UserPersisto's issuer must be publicly reachable over HTTPS, and the Ploinky
 public-protocol route must preserve OIDC discovery, JWKS, authorization, token,
@@ -147,24 +148,34 @@ headers, TLS configuration or registered-client state.
 The original Axiologic repository and the `skutner` fork are distinct release
 sources. The current preview is `https://skutner.github.io/ScriptaHub/`, with
 client `scriptahub-preview` and issuer
-`http://127.0.0.1:8080/base-agent-additional-server/userPersistoAgent/7000/service/oidc`.
+`https://explorer-qa.axiologic.dev/base-agent-additional-server/userPersistoAgent/7000/service/oidc`.
 Its exact UserPersisto callback is
-`https://skutner.github.io/ScriptaHub/auth/callback.html`. This loopback issuer is
-reachable only from a browser on its serving computer. The checked-in default
-has an empty issuer and client `scriptahub-web`; building does not configure the
-preview. Preserve each environment's `auth/config.json` during an authorized
-release. Do not substitute the fork's callback for the original site's callback.
+`https://skutner.github.io/ScriptaHub/auth/callback.html`. This fork's checked-in
+`auth/config.json` selects QA. The original repository has a separate
+`scriptahub-web` configuration; do not substitute callbacks between them.
+GitHub Pages publishes this fork's `user-persisto-v2` branch from `/docs`.
+
+Register `scriptahub-preview` as a public client (`token_endpoint_auth_method:
+none`) with only that exact callback, the `authorization_code` grant, the `code`
+response type, and `openid email roles` scopes. PKCE is mandatory. QA owns and
+persists the accounts, consents and short-lived credentials; GitHub Pages stores
+no account database or client secret. Complete the QA administrator setup first,
+then verify that a new reader receives `selfRegistered` and cannot enter
+Explorer. Preserve QA's `.data/userPersistoAgent`, settings encryption key and
+OIDC signing keys across deployments.
 
 Google is an optional upstream sign-in method owned by UserPersisto. ScriptaHub
 still requests only UserPersisto tokens and does not receive Google secrets,
-tokens or subjects. The Google Web application's exact callback belongs to
-UserPersisto, not to ScriptaHub. Enable/configure Google through the selected
-UserPersisto deployment's administrator/operator procedure; no Google SDK or
-additional browser library is needed here. Real Google chooser/consent, exact
-Google Cloud registration, public-host routing, Chrome Local Network Access
-allow/deny behavior, Firefox and Safari acceptance require their selected
-operator configuration, browsers and authorized test accounts. A controlled
-provider does not establish those results.
+tokens or subjects. QA explicitly configures a Google Web client with
+`https://explorer-qa.axiologic.dev` as an Authorized JavaScript origin. Its
+UserPersisto configuration must select that same origin. The distributed default
+remains localhost; reusing that client for QA requires both explicit configuration
+fields and registering QA's origin in Google Cloud. Enable/configure Google through the
+selected UserPersisto deployment's administrator/operator procedure; no Google
+SDK or additional browser library is needed here. Real Google chooser/consent,
+Google Cloud registration, public-host routing, Firefox and Safari acceptance
+require their selected operator configuration, browsers and authorized test
+accounts. A controlled provider does not establish those results.
 
 ## Controlled browser verification
 

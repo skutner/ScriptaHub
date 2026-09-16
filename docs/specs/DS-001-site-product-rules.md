@@ -114,9 +114,18 @@ Reading and direct PDF file URLs remain public. Clicking a site PDF download
 (including historical editions and reader PDF links) or the book's edition-feedback
 action requires a UserPersisto account. The popup opens registration first; enabled UserPersisto methods, including
 optional Google, remain owned and configured by UserPersisto. Existing-account
-sign-in remains available. Public signup
-assigns `selfRegistered` under the configured registration policy and cannot
-bootstrap an administrator. Existing `user` and `admin` accounts also qualify.
+sign-in remains available. After installation setup, public signup assigns
+`selfRegistered` under the configured registration policy. Connect the public
+site only after the installation owner has completed setup. Existing `user` and
+`admin` accounts also qualify.
+
+The `skutner.github.io/ScriptaHub/` preview uses QA UserPersisto at
+`https://explorer-qa.axiologic.dev/base-agent-additional-server/userPersistoAgent/7000/service/oidc`
+with public client `scriptahub-preview` and exact callback
+`https://skutner.github.io/ScriptaHub/auth/callback.html`. New readers and their
+`selfRegistered` assignments are persisted in QA UserPersisto. These accounts do
+not receive Explorer access. The original site's deployment remains separately
+configured.
 
 The shared browser client uses OpenID Connect Authorization Code with PKCE,
 state, nonce, signature validation, and a same-origin callback. Each gated action
